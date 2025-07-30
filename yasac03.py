@@ -1,7 +1,7 @@
 import requests
 import json
 
-def get_zscaler_token(vanity_domain, client_id, client_secret):
+def get_api_token(vanity_domain, client_id, client_secret):
     token_url = f"https://{vanity_domain}.zslogin.net/oauth2/v1/token"
     headers = {
         "Content-Type": "application/x-www-form-urlencoded"
