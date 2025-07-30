@@ -24,15 +24,15 @@ def get_zscaler_token(vanity_domain, client_id, client_secret):
         expires_in = token_data.get("expires_in")
 
         if access_token:
-            print("✅ Access token obtained successfully.")
-            print(f"🔒 Token expires in {expires_in} seconds.\n")
+            print("Access token obtained successfully.")
+            print(f"Token expires in {expires_in} seconds.\n")
             return access_token
         else:
-            print("❌ Failed to retrieve access token.")
+            print("Failed to retrieve access token.")
             return None
 
     except requests.exceptions.RequestException as e:
-        print("❌ Error during token request:", e)
+        print("Error during token request:", e)
         if response is not None:
             print(f"Response content: {response.text}")
         return None
@@ -41,7 +41,7 @@ def call_api_with_token(token):
     while True:
         endpoint_url = input("\nEnter full API endpoint URL (or type 'exit' to quit): ").strip()
         if endpoint_url.lower() == "exit":
-            print("👋 Exiting API client.")
+            print("Exiting API client.")
             break
 
         method = input("Enter HTTP method (GET/POST) [default GET]: ").strip().upper() or "GET"
@@ -50,7 +50,7 @@ def call_api_with_token(token):
         try:
             payload = json.loads(raw_payload) if raw_payload else {}
         except json.JSONDecodeError:
-            print("⚠️ Invalid JSON. Sending empty payload.")
+            print("Invalid JSON. Sending empty payload.")
             payload = {}
 
         headers = {
@@ -67,9 +67,9 @@ def call_api_with_token(token):
             print(f"\n[DEBUG] Status Code: {response.status_code}")
             print(f"[DEBUG] Raw Response: {response.text}")
             response.raise_for_status()
-            print("✅ API response:\n", json.dumps(response.json(), indent=2))
+            print("API response:\n", json.dumps(response.json(), indent=2))
         except requests.exceptions.RequestException as e:
-            print("❌ Error while calling API:", e)
+            print("Error while calling API:", e)
 
 def main():
     print("=== Simple OneAPI Client ===")
@@ -86,7 +86,7 @@ def main():
     if token:
         call_api_with_token(token)
     else:
-        print("❌ Could not proceed without a valid token.")
+        print("Could not proceed without a valid token.")
 
 if __name__ == "__main__":
     main()
