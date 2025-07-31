@@ -43,33 +43,48 @@ def call_api_with_token(token):
         if endpoint_url.lower() == "exit":
             print("Exiting API client.")
             break
+            
+        method = input("Enter HTTP method (GET/POST) [default POST]: ").strip().upper() or "POST"
 
-        method = input("Enter HTTP method (GET/POST) [default GET]: ").strip().upper() or "GET"
         raw_payload = input("Enter JSON payload (leave blank for none): ").strip()
 
-        try:
-            payload = json.loads(raw_payload) if raw_payload else {}
-        except json.JSONDecodeError:
-            print("Invalid JSON. Sending empty payload.")
-            payload = {}
+        # Validate JSON payload if provided
+        if raw_payload:
+            try:
+                json_payload = json.loads(raw_payload)
+                payload = json.dumps(json_payload)  # Properly serialized string
+            except json.JSONDecodeError as e:
+                print("Invalid JSON. Please check formatting.")
+                continue
+        else:
+            payload = None
 
         headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json"
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
         }
 
         try:
-            if method == "POST":
-                response = requests.post(endpoint_url, headers=headers, json=payload)
-            else:
-                response = requests.get(endpoint_url, headers=headers, params=payload)
+            if method == "GET":
+                response = requests.get(endpoint_url, headers=headers, params=json_payload if payload else {})
+            else:  # POST (or default)
+                response = requests.post(endpoint_url, headers=headers, data=payload)
 
             print(f"\n[DEBUG] Status Code: {response.status_code}")
             print(f"[DEBUG] Raw Response: {response.text}")
+
             response.raise_for_status()
-            print("API response:\n", json.dumps(response.json(), indent=2))
+
+            try:
+                print("API Response (formatted):")
+                print(json.dumps(response.json(), indent=2))
+            except ValueError:
+                print("Non-JSON response:")
+                print(response.text)
+
         except requests.exceptions.RequestException as e:
             print("Error while calling API:", e)
+        
 
 def main():
     print("=== Simple OneAPI Client ===")
